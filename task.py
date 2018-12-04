@@ -15,18 +15,21 @@ def get_field_config(file):
     return array, indexes
 
 
-def make_cycles(config, indexes):
-    cycles_black = []
-    cycles_white = []
-    for l in indexes:
+def make_cycles(indexes):
+    cycles = [[], []]
+    for k in range(2):
         temporary_cycles = []
-        for pair in l:
-            temporary_cycles.append(pair)
-            for i in range(pair[0] - 1, pair[0] + 1):
-                for j in range(pair[1] - 1, pair[1] + 1):
-                    if i != -1 and j != -1:
-                        if (i, j) in l:
-                            temporary_cycles.append(i, j)
+        pair = indexes[k][0]
+        temporary_cycles.append(pair)
+        for i in range(pair[0] - 1, pair[0] + 1):
+            for j in range(pair[1] - 1, pair[1] + 1):
+                if i != -1 and j != -1:
+                    if (i, j) in l:
+                        temporary_cycles.append(i, j)
+                        pair = ((i, j))
+        if abs(temporary_cycles[0][0] - temporary_cycles[-1][0]) < 3:
+            if abs(temporary_cycles[0][1] - temporary_cycles[-1][1]) < 3:
+                cycles[k].append(temporary_cycles)
 
 
 
@@ -35,7 +38,7 @@ def main():
         field, indexes = get_field_config(file.read())
     indexes[0].sort()
     indexes[1].sort()
-    cycles = make_cycles(field. indexes)
+    cycles = make_cycles(indexes)
 
 
 if __name__ == '__main__':

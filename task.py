@@ -19,19 +19,23 @@ def make_cycles(config, indexes):
     cycles_black = []
     cycles_white = []
     for l in indexes:
+        temporary_cycles = []
         for pair in l:
-            pass
+            temporary_cycles.append(pair)
+            for i in range(pair[0] - 1, pair[0] + 1):
+                for j in range(pair[1] - 1, pair[1] + 1):
+                    if i != -1 and j != -1:
+                        if (i, j) in l:
+                            temporary_cycles.append(i, j)
 
 
 
 def main():
     with open('in.txt') as file:
         field, indexes = get_field_config(file.read())
-    print(field)
     indexes[0].sort()
     indexes[1].sort()
-    print(indexes)
-    #  cycles = make_cycles(field. indexes)
+    cycles = make_cycles(field. indexes)
 
 
 if __name__ == '__main__':

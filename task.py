@@ -24,12 +24,13 @@ def make_cycles(indexes):
         for i in range(pair[0] - 1, pair[0] + 1):
             for j in range(pair[1] - 1, pair[1] + 1):
                 if i != -1 and j != -1:
-                    if (i, j) in l:
+                    if (i, j) in indexes and (i, j) not in temporary_cycles:
                         temporary_cycles.append(i, j)
                         pair = ((i, j))
         if abs(temporary_cycles[0][0] - temporary_cycles[-1][0]) < 3:
             if abs(temporary_cycles[0][1] - temporary_cycles[-1][1]) < 3:
                 cycles[k].append(temporary_cycles)
+    return cycles
 
 
 
@@ -39,6 +40,7 @@ def main():
     indexes[0].sort()
     indexes[1].sort()
     cycles = make_cycles(indexes)
+    print(cycles)
 
 
 if __name__ == '__main__':

@@ -40,9 +40,11 @@ def search(letter, another_letter, indexes):
     queue = [indexes[letter][0]]
     counter = 0
     step = 0
-    answer = [[], []]
+    block = 0
+    answer = [[], [], 0, 0]
     while queue:
         current = queue.pop(0)
+        block += 1
         visited.add(current)
         neighbours, places = get_neighbours(current, indexes, letter, another_letter)
         possible_points = []
@@ -67,15 +69,31 @@ def search(letter, another_letter, indexes):
                 queue.append(neighbour)
         if not queue:
             if step != 0:
-                answer[another_letter].append(step)
+                if answer[letter + 2] < block:
+                    answer[letter + 2] = block
+                    answer[another_letter] = [(step[1] + 1, step[0] + 1)]
+                if answer[letter + 2] == block:
+                    answer[another_letter].append((step[1] + 1, step[0] + 1))
                 step = 0
             for tup in indexes[letter]:
                 if tup not in visited:
                     queue.append(tup)
                     counter = 0
                     break
+            block = 0
     return answer[another_letter]
 
+
+def print_result(result):
+    with open("out.txt", 'w') as file:
+        for i in range(1, -1, -1):
+            if result[i]:
+                string = ''
+                for place in result[i]:
+                    string += str(place[0]) + ' ' + str(place[1]) + '  '
+                file.write(string)
+            else:
+                file.write('N\n')
 
 
 def main():
@@ -83,8 +101,10 @@ def main():
         field, indexes = get_field_config(file.read())
     answer = [[], []]
     for l in range(2):
-        answer[l] = search(l, (l + 1) % 2, indexes)
-    print(answer)
+        answer[l] = list(set(search(l, (l + 1) % 2, indexes)))
+        answer[l].sort()
+    print_result(answer)
+
 
 if __name__ == '__main__':
     main()

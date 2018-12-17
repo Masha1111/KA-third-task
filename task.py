@@ -24,47 +24,67 @@ directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
 def get_neighbours(node, indexes, char, another_char):
     result = []
     possible_places = []
-    for i in [-1, 0, 1]:
-        for j in [-1, 0, 1]:
-            if i != 0 and j != 0:
-                if (node[0] + i, node[1] + j) not in indexes[char]:
-                    if (node[0] + i, node[1] + j) not in indexes[another_char]:
-                        possible_places.append((node[0] + i, node[1] + j))
-                if (node[0] + i, node[1] + j) in indexes[char]:
-                    result.append((node[0] + i, node[1] + j))
+    for tup in directions:
+        if (node[0] + tup[0], node[1] + tup[1]) not in indexes[char]:
+            if (node[0] + tup[0], node[1] + tup[1]) not in indexes[another_char]:
+                possible_places.append((node[0] + tup[0], node[1] + tup[1]))
+        if (node[0] + tup[0], node[1] + tup[1]) in indexes[char]:
+            result.append((node[0] + tup[0], node[1] + tup[1]))
     return result, possible_places
 
 
 def search(letter, another_letter, indexes):
     visited = set()
     if not indexes[letter]:
-        return
+        return None
     queue = [indexes[letter][0]]
     counter = 0
+    step = 0
     answer = [[], []]
     while queue:
         current = queue.pop(0)
-        if current in visited:
-            continue
         visited.add(current)
         neighbours, places = get_neighbours(current, indexes, letter, another_letter)
-        if len(places) == 1:
-            counter += 1
-            answer[another_letter].append(places[0])
+        possible_points = []
+        for place in places:
+            if -1 not in place:
+                if 8 not in place:
+                    possible_points.append(place)
+        if len(possible_points) == 1:
+            if counter == 0:
+                counter += 1
+                step = possible_points[0]
+            else:
+                for neighbour in neighbours:
+                    visited.add(neighbour)
+        if len(possible_points) > 1:
+            step = 0
+            counter = 0
+            for neighbour in neighbours:
+                visited.add(neighbour)
         for neighbour in neighbours:
-            queue.append(neighbour)
-    return answer
-
+            if neighbour not in visited:
+                queue.append(neighbour)
+        if not queue:
+            if step != 0:
+                answer[another_letter].append(step)
+                step = 0
+            for tup in indexes[letter]:
+                if tup not in visited:
+                    queue.append(tup)
+                    counter = 0
+                    break
+    return answer[another_letter]
 
 
 
 def main():
     with open('in.txt') as file:
         field, indexes = get_field_config(file.read())
-    answer = []
+    answer = [[], []]
     for l in range(2):
-        answer.append(search(l, (l + 1) % 2, indexes))
-
+        answer[l] = search(l, (l + 1) % 2, indexes)
+    print(answer)
 
 if __name__ == '__main__':
     main()
